@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WESTERN PARKS 2025 // Ultimate Road Trip Experience</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --camp: #10b981;
+            --camp-glow: rgba(16, 185, 129, 0.6);
+            --hotel: #3b82f6;
+            --hotel-glow: rgba(59, 130, 246, 0.6);
+            --pass: #6b7280;
+            --start: #f97316;
+            --start-glow: rgba(249, 115, 22, 0.6);
+            --route: #8b5cf6;
+            --route-glow: rgba(139, 92, 246, 0.6);
+            --accent: #fbbf24;
+            --danger: #ef4444;
+            --bg: #09090b;
+            --card: rgba(24, 24, 27, 0.95);
+            --card-hover: rgba(39, 39, 42, 0.95);
+            --border: rgba(63, 63, 70, 0.5);
+            --text: #fafafa;
+            --text-muted: #a1a1aa;
+            --text-dim: #71717a;
+        }
+
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100%;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══════════════════════════════════════════
+           COSMIC BACKGROUND SYSTEM
+           ═══════════════════════════════════════════ */
+
+        .universe {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .nebula {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            top: -25%;
+            left: -25%;
+            background:
+                radial-gradient(ellipse 600px 400px at 15% 30%, rgba(139, 92, 246, 0.15), transparent),
+                radial-gradient(ellipse 500px 350px at 85% 70%, rgba(59, 130, 246, 0.12), transparent),
+                radial-gradient(ellipse 400px 300px at 50% 50%, rgba(16, 185, 129, 0.08), transparent),
+                radial-gradient(ellipse 300px 200px at 70% 20%, rgba(249, 115, 22, 0.1), transparent);
+            animation: nebulaDrift 60s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        @keyframes nebulaDrift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(3%, -3%) rotate(1deg) scale(1.02); }
+            50% { transform: translate(-2%, 2%) rotate(-0.5deg) scale(0.98); }
+            75% { transform: translate(2%, -1%) rotate(0.5deg) scale(1.01); }
+        }
+
+        .stars-layer {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image:
+                radial-gradient(1px 1px at 10% 10%, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,255,255,1), transparent),
+                radial-gradient(1px 1px at 30% 20%, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 40% 70%, rgba(255,255,255,1), transparent),
+                radial-gradient(1px 1px at 50% 40%, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1.5px 1.5px at 60% 80%, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 70% 10%, rgba(255,255,255,0.5), transparent),
+                radial-gradient(1px 1px at 80% 50%, rgba(255,255,255,0.8), transparent),
+                radial-gradient(2px 2px at 90% 90%, rgba(255,255,255,1), transparent),
+                radial-gradient(1px 1px at 95% 25%, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1.5px 1.5px at 5% 85%, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 25% 95%, rgba(255,255,255,0.5), transparent),
+                radial-gradient(2px 2px at 35% 5%, rgba(255,255,255,1), transparent),
+                radial-gradient(1px 1px at 45% 45%, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1.5px 1.5px at 55% 15%, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 65% 65%, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 75% 35%, rgba(255,255,255,0.7), transparent),
+                radial-gradient(2px 2px at 85% 75%, rgba(255,255,255,1), transparent),
+                radial-gradient(1px 1px at 92% 55%, rgba(255,255,255,0.5), transparent);
+            background-size: 400px 400px;
+            animation: starsTwinkle 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes starsTwinkle {
+            0% { opacity: 0.4; }
+            100% { opacity: 0.8; }
+        }
+
+        .shooting-stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,1), rgba(255,255,255,0));
+            border-radius: 50%;
+            animation: shoot 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(-100px) translateY(0); opacity: 0; }
+            5% { opacity: 1; }
+            30% { opacity: 1; }
+            35% { transform: translateX(calc(100vw + 100px)) translateY(100px); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        .grid-lines {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+        }
+
+        /* ═══════════════════════════════════════════
+           MAIN LAYOUT
+           ═══════════════════════════════════════════ */
+
+        .app {
+            display: flex;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ═══════════════════════════════════════════
+           SIDEBAR
+           ═══════════════════════════════════════════ */
+
+        .sidebar {
+            width: 440px;
+            height: 100vh;
+            background: var(--card);
+            backdrop-filter: blur(40px) saturate(150%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 100;
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+            flex-shrink: 0;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        /* Header */
+        .header {
+            padding: 28px 24px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--route), #a855f7);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            box-shadow: 0 0 30px var(--route-glow), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .badge-pulse {
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .title {
+            font-family: 'Orbitron', monospace;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        /* Countdown */
+        .countdown {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .countdown-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .countdown-item {
+            text-align: center;
+        }
+
+        .countdown-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+        }
+
+        .countdown-unit {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 6px;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--route);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--camp), var(--hotel));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Controls */
+        .controls {
+            padding: 20px 24px;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--card-hover);
+            border-color: var(--route);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--route), #a855f7);
+            border: none;
+            box-shadow: 0 4px 20px var(--route-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--route-glow);
+        }
+
+        .btn-primary.playing {
+            background: linear-gradient(135deg, var(--danger), #f97316);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-small {
+            flex: 0 0 auto;
+            width: 48px;
+            padding: 14px;
+        }
+
+        /* Map Style Toggle */
+        .map-styles {
+            display: flex;
+            gap: 6px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .style-btn {
+            flex: 1;
+            padding: 10px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .style-btn:hover {
+            color: var(--text);
+            border-color: var(--text-muted);
+        }
+
+        .style-btn.active {
+            background: var(--route);
+            border-color: var(--route);
+            color: white;
+        }
+
+        /* Elevation */
+        .elevation {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .elevation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .elevation-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .elevation-peak {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .elevation-chart {
+            height: 50px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .elevation-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .elevation-fill {
+            fill: url(#elevGrad);
+        }
+
+        .elevation-line {
+            fill: none;
+            stroke: var(--route);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .elevation-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            transition: left 0.4s ease;
+            left: 0%;
+        }
+
+        .elevation-marker::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        /* Itinerary */
+        .itinerary {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .itinerary::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .itinerary::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .itinerary::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .itinerary::-webkit-scrollbar-thumb:hover {
+            background: var(--text-dim);
+        }
+
+        .stop {
+            padding: 16px;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+            position: relative;
+        }
+
+        .stop::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 4px 0 0 4px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .stop.camp::before { background: var(--camp); }
+        .stop.hotel::before { background: var(--hotel); }
+        .stop.pass::before { background: var(--pass); }
+        .stop.start::before { background: var(--start); }
+
+        .stop:hover {
+            background: rgba(139, 92, 246, 0.08);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateX(6px);
+        }
+
+        .stop.active {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: var(--route);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+
+        .stop.camp:hover::before, .stop.camp.active::before { box-shadow: 0 0 20px var(--camp-glow); }
+        .stop.hotel:hover::before, .stop.hotel.active::before { box-shadow: 0 0 20px var(--hotel-glow); }
+        .stop.start:hover::before, .stop.start.active::before { box-shadow: 0 0 20px var(--start-glow); }
+
+        .stop-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .stop-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .stop.camp .stop-num { background: var(--camp); color: #000; box-shadow: 0 0 20px var(--camp-glow); }
+        .stop.hotel .stop-num { background: var(--hotel); color: #fff; box-shadow: 0 0 20px var(--hotel-glow); }
+        .stop.pass .stop-num { background: var(--pass); color: #fff; }
+        .stop.start .stop-num { background: var(--start); color: #fff; box-shadow: 0 0 20px var(--start-glow); }
+
+        .stop-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stop-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .park-tag {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 8px;
+            background: linear-gradient(135deg, var(--camp), var(--hotel));
+            border-radius: 100px;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stop-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .stop-drive {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            padding: 3px 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+        }
+
+        .stop-notes {
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 3px solid var(--route);
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ═══════════════════════════════════════════
+           MAP AREA
+           ═══════════════════════════════════════════ */
+
+        .map-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+        }
+
+        /* Toggle */
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            width: 52px;
+            height: 52px;
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: var(--card-hover);
+            border-color: var(--route);
+            box-shadow: 0 0 25px var(--route-glow);
+        }
+
+        .toggle-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Current Stop Display */
+        .current-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            padding: 16px 28px;
+            border-radius: 16px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .current-display.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .current-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .current-info h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .current-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .current-stats {
+            display: flex;
+            gap: 24px;
+            padding-left: 20px;
+            border-left: 1px solid var(--border);
+        }
+
+        .current-stat {
+            text-align: center;
+        }
+
+        .current-stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .current-stat-label {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            padding: 14px 24px;
+            border-radius: 100px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .progress-track {
+            width: 180px;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--camp), var(--hotel), var(--route));
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .progress-text span {
+            color: var(--route);
+            font-weight: 600;
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: var(--card);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            padding: 18px 20px;
+            border-radius: 14px;
+            z-index: 1000;
+        }
+
+        .legend-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 5px;
+        }
+
+        .legend-dot.camp { background: var(--camp); box-shadow: 0 0 10px var(--camp-glow); }
+        .legend-dot.hotel { background: var(--hotel); box-shadow: 0 0 10px var(--hotel-glow); }
+        .legend-dot.pass { background: var(--pass); }
+        .legend-dot.start { background: var(--start); box-shadow: 0 0 10px var(--start-glow); }
+
+        .legend-line {
+            width: 20px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--route), #a855f7);
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--route-glow);
+        }
+
+        /* Map Controls */
+        .map-btns {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .map-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .map-btn:hover {
+            background: var(--card-hover);
+            border-color: var(--route);
+        }
+
+        .map-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ═══════════════════════════════════════════
+           POPUPS
+           ═══════════════════════════════════════════ */
+
+        .leaflet-popup-content-wrapper {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5) !important;
+            padding: 0 !important;
+        }
+
+        .leaflet-popup-content {
+            margin: 0 !important;
+            min-width: 260px;
+        }
+
+        .leaflet-popup-tip {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: none !important;
+        }
+
+        .popup {
+            padding: 18px;
+        }
+
+        .popup-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .popup-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .popup-icon.camp { background: var(--camp); color: #000; }
+        .popup-icon.hotel { background: var(--hotel); color: #fff; }
+        .popup-icon.pass { background: var(--pass); color: #fff; }
+        .popup-icon.start { background: var(--start); color: #fff; }
+
+        .popup-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .popup-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .popup-label {
+            color: var(--text-dim);
+        }
+
+        .popup-value {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .popup-notes {
+            margin-top: 14px;
+            padding: 10px 12px;
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 3px solid var(--route);
+            border-radius: 0 8px 8px 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ═══════════════════════════════════════════
+           LOADING SCREEN
+           ═══════════════════════════════════════════ */
+
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .loader.done {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, var(--camp), var(--hotel), var(--route));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+            animation: logoShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes logoShimmer {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 20px var(--route-glow)); }
+            50% { filter: brightness(1.2) drop-shadow(0 0 40px var(--camp-glow)); }
+        }
+
+        .loader-bar-container {
+            width: 240px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .loader-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--camp), var(--hotel), var(--route), var(--camp));
+            background-size: 300% 100%;
+            animation: loaderMove 1.5s linear infinite;
+            width: 100%;
+        }
+
+        @keyframes loaderMove {
+            0% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .loader-text {
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .loader-stats {
+            display: flex;
+            gap: 48px;
+            margin-top: 48px;
+        }
+
+        .loader-stat {
+            text-align: center;
+        }
+
+        .loader-stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--route);
+        }
+
+        .loader-stat-label {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 6px;
+        }
+
+        /* ═══════════════════════════════════════════
+           CONFETTI
+           ═══════════════════════════════════════════ */
+
+        .confetti-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            overflow: hidden;
+        }
+
+        /* ═══════════════════════════════════════════
+           KEYBOARD HINTS
+           ═══════════════════════════════════════════ */
+
+        .keyboard-hints {
+            position: absolute;
+            bottom: 24px;
+            left: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .hint {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .hint kbd {
+            padding: 4px 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+        }
+
+        /* ═══════════════════════════════════════════
+           LEAFLET CUSTOMIZATION
+           ═══════════════════════════════════════════ */
+
+        .leaflet-control-zoom {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .leaflet-control-zoom a {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text) !important;
+            width: 40px !important;
+            height: 40px !important;
+            line-height: 40px !important;
+            font-size: 18px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .leaflet-control-zoom a:first-child {
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .leaflet-control-zoom a:last-child {
+            border-radius: 0 0 10px 10px !important;
+        }
+
+        .leaflet-control-zoom a:hover {
+            background: var(--card-hover) !important;
+            border-color: var(--route) !important;
+        }
+
+        .leaflet-control-attribution {
+            background: var(--card) !important;
+            color: var(--text-dim) !important;
+            padding: 4px 10px !important;
+            border-radius: 8px !important;
+            font-size: 10px !important;
+        }
+
+        .leaflet-control-attribution a {
+            color: var(--text-muted) !important;
+        }
+
+        /* ═══════════════════════════════════════════
+           MOBILE
+           ═══════════════════════════════════════════ */
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 380px;
+                z-index: 200;
+            }
+
+            .current-display {
+                left: 80px;
+                right: 20px;
+                transform: none;
+            }
+
+            .current-stats {
+                display: none;
+            }
+
+            .keyboard-hints {
+                display: none;
+            }
+
+            .legend {
+                right: 10px;
+                bottom: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader-logo">WESTERN PARKS</div>
+        <div class="loader-bar-container">
+            <div class="loader-bar"></div>
+        </div>
+        <div class="loader-text">Preparing your adventure</div>
+        <div class="loader-stats">
+            <div class="loader-stat">
+                <div class="loader-stat-value">21</div>
+                <div class="loader-stat-label">Stops</div>
+            </div>
+            <div class="loader-stat">
+                <div class="loader-stat-value">6</div>
+                <div class="loader-stat-label">Nat'l Parks</div>
+            </div>
+            <div class="loader-stat">
+                <div class="loader-stat-value">20</div>
+                <div class="loader-stat-label">Nights</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti -->
+    <div class="confetti-container" id="confetti"></div>
+
+    <!-- Cosmic Background -->
+    <div class="universe">
+        <div class="nebula"></div>
+        <div class="stars-layer"></div>
+        <div class="shooting-stars" id="shootingStars"></div>
+        <div class="grid-lines"></div>
+    </div>
+
+    <!-- App -->
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-glow"></div>
+
+            <header class="header">
+                <div class="badge">
+                    <div class="badge-pulse"></div>
+                    21-Day Adventure
+                </div>
+                <h1 class="title">WESTERN PARKS</h1>
+                <p class="subtitle">MAY 12 — JUN 2, 2025</p>
+
+                <div class="countdown">
+                    <div class="countdown-label">Departure Countdown</div>
+                    <div class="countdown-grid">
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="days">---</div>
+                            <div class="countdown-unit">Days</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="hours">--</div>
+                            <div class="countdown-unit">Hours</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="mins">--</div>
+                            <div class="countdown-unit">Mins</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="secs">--</div>
+                            <div class="countdown-unit">Secs</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-icon">🛣️</div>
+                        <div class="stat-value" id="miles">0</div>
+                        <div class="stat-label">Miles</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value" id="driveHours">0</div>
+                        <div class="stat-label">Hours</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-icon">🏕️</div>
+                        <div class="stat-value">11</div>
+                        <div class="stat-label">Camp</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-icon">🏨</div>
+                        <div class="stat-value">9</div>
+                        <div class="stat-label">Hotel</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="playBtn">
+                    <svg class="btn-icon" id="playIcon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <span id="playLabel">Play Trip</span>
+                </button>
+                <button class="btn btn-small" id="speedBtn" title="Speed">
+                    <span id="speedLabel">1×</span>
+                </button>
+            </div>
+
+            <div class="map-styles">
+                <button class="style-btn active" data-style="dark">Dark</button>
+                <button class="style-btn" data-style="satellite">Satellite</button>
+                <button class="style-btn" data-style="terrain">Terrain</button>
+            </div>
+
+            <div class="elevation">
+                <div class="elevation-header">
+                    <div class="elevation-title">Elevation Profile</div>
+                    <div class="elevation-peak">Peak: 6,800 ft</div>
+                </div>
+                <div class="elevation-chart">
+                    <svg class="elevation-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="elevGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="rgba(139, 92, 246, 0.4)"/>
+                                <stop offset="100%" stop-color="rgba(139, 92, 246, 0)"/>
+                            </linearGradient>
+                        </defs>
+                        <path class="elevation-fill" d="M0,28 L5,27 L10,26 L15,24 L20,20 L25,16 L30,10 L35,8 L40,6 L45,4 L50,3 L55,5 L60,8 L65,6 L70,10 L75,14 L80,12 L85,18 L90,24 L95,27 L100,28 L100,30 L0,30 Z"/>
+                        <path class="elevation-line" d="M0,28 L5,27 L10,26 L15,24 L20,20 L25,16 L30,10 L35,8 L40,6 L45,4 L50,3 L55,5 L60,8 L65,6 L70,10 L75,14 L80,12 L85,18 L90,24 L95,27 L100,28"/>
+                    </svg>
+                    <div class="elevation-marker" id="elevMarker"></div>
+                </div>
+            </div>
+
+            <div class="itinerary" id="itinerary"></div>
+        </aside>
+
+        <!-- Map Area -->
+        <main class="map-area">
+            <button class="toggle-btn" id="toggleBtn" title="Toggle Sidebar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+
+            <div class="current-display" id="currentDisplay">
+                <div class="current-icon" id="currentIcon">1</div>
+                <div class="current-info">
+                    <h3 id="currentName">Canton, MI</h3>
+                    <p id="currentMeta">Starting Point</p>
+                </div>
+                <div class="current-stats">
+                    <div class="current-stat">
+                        <div class="current-stat-value" id="currentElev">850</div>
+                        <div class="current-stat-label">Feet</div>
+                    </div>
+                    <div class="current-stat">
+                        <div class="current-stat-value" id="stopsLeft">21</div>
+                        <div class="current-stat-label">Stops Left</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-btns">
+                <button class="map-btn" id="fullscreenBtn" title="Fullscreen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                    </svg>
+                </button>
+                <button class="map-btn" id="fitBtn" title="Fit All">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v8M8 12h8"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="map"></div>
+
+            <div class="progress-bar">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text">
+                    Stop <span id="currentNum">0</span> of 21
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-title">Legend</div>
+                <div class="legend-item">
+                    <div class="legend-dot start"></div>
+                    <span>Start / End</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot camp"></div>
+                    <span>Camping</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot hotel"></div>
+                    <span>Hotel</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot pass"></div>
+                    <span>Pass Through</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-line"></div>
+                    <span>Route</span>
+                </div>
+            </div>
+
+            <div class="keyboard-hints">
+                <div class="hint"><kbd>Space</kbd> Play/Pause</div>
+                <div class="hint"><kbd>←</kbd><kbd>→</kbd> Navigate</div>
+                <div class="hint"><kbd>F</kbd> Fullscreen</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    (function() {
+        'use strict';
+
+        // ═══════════════════════════════════════════
+        // DATA
+        // ═══════════════════════════════════════════
+
+        const STOPS = [
+            { id: 1, name: "Canton, MI", lat: 42.3087, lng: -83.4821, dates: "Depart May 12", nights: 0, type: "start", drive: null, notes: "Let the adventure begin! 🚗", park: false, elev: 850 },
+            { id: 2, name: "Madison, WI", lat: 43.0731, lng: -89.4012, dates: "May 12-13", nights: 1, type: "hotel", drive: "6h", notes: "First night on the road", park: false, elev: 870 },
+            { id: 3, name: "Pipestone NM", lat: 44.0003, lng: -96.3172, dates: "May 13", nights: 0, type: "pass", drive: "6h", notes: "Quick stop at the monument", park: true, elev: 1740 },
+            { id: 4, name: "Sioux Falls, SD", lat: 43.5446, lng: -96.7311, dates: "May 13-14", nights: 1, type: "hotel", drive: "1h", notes: null, park: false, elev: 1420 },
+            { id: 5, name: "Badlands NP", lat: 43.8554, lng: -102.3397, dates: "May 14-16", nights: 2, type: "camp", drive: "4h", notes: "Buffalo Gap — Free FCFS 🦬", park: true, elev: 2460 },
+            { id: 6, name: "Mt. Rushmore", lat: 43.8791, lng: -103.4591, dates: "May 16", nights: 0, type: "pass", drive: "1.5h", notes: null, park: true, elev: 5725 },
+            { id: 7, name: "Wind Cave NP", lat: 43.5724, lng: -103.4838, dates: "May 16", nights: 0, type: "pass", drive: "1h", notes: null, park: true, elev: 4050 },
+            { id: 8, name: "Jewel Cave NM", lat: 43.7294, lng: -103.8295, dates: "May 16", nights: 0, type: "pass", drive: "30m", notes: null, park: true, elev: 5430 },
+            { id: 9, name: "Gillette, WY", lat: 44.2911, lng: -105.5022, dates: "May 16-17", nights: 1, type: "hotel", drive: "1.5h", notes: null, park: false, elev: 4550 },
+            { id: 10, name: "Bighorn Canyon", lat: 45.0636, lng: -108.1912, dates: "May 17-18", nights: 1, type: "hotel", drive: "3h", notes: "SureStay Plus Best Western", park: true, elev: 3940 },
+            { id: 11, name: "Yellowstone NP", lat: 44.4280, lng: -110.5885, dates: "May 18-20", nights: 2, type: "camp", drive: "5h", notes: "Madison Campground ⛺ BOOKED!", park: true, elev: 6800 },
+            { id: 12, name: "West Yellowstone", lat: 44.6621, lng: -111.1041, dates: "May 20-21", nights: 1, type: "hotel", drive: "30m", notes: "⚠️ NEED TO BOOK HOTEL", park: false, elev: 6670 },
+            { id: 13, name: "Grand Teton NP", lat: 43.7904, lng: -110.6818, dates: "May 21-23", nights: 2, type: "camp", drive: "30m", notes: "Colter Bay ⛺ BOOKED!", park: true, elev: 6780 },
+            { id: 14, name: "Glacier NP", lat: 48.7596, lng: -113.7870, dates: "May 23-25", nights: 2, type: "camp", drive: "6h", notes: "Glacier Acres Campground", park: true, elev: 4500 },
+            { id: 15, name: "East Glacier", lat: 48.4455, lng: -113.2263, dates: "May 25-26", nights: 1, type: "camp", drive: "2.5h", notes: "East Glacier KOA", park: false, elev: 4800 },
+            { id: 16, name: "Banff, Canada 🇨🇦", lat: 51.1784, lng: -115.5708, dates: "May 26-29", nights: 3, type: "camp", drive: "5.5h", notes: "Two Jack Lakeside — Book January!", park: true, elev: 4540 },
+            { id: 17, name: "Havre, MT", lat: 48.5500, lng: -109.6841, dates: "May 29-30", nights: 1, type: "hotel", drive: "7h", notes: null, park: false, elev: 2490 },
+            { id: 18, name: "Theodore Roosevelt NP", lat: 46.9790, lng: -103.5387, dates: "May 30-31", nights: 1, type: "camp", drive: "5.5h", notes: "Cottonwood ⛺ BOOKED!", park: true, elev: 2570 },
+            { id: 19, name: "Minneapolis, MN", lat: 44.9778, lng: -93.2650, dates: "May 31 - Jun 1", nights: 1, type: "hotel", drive: "8h", notes: null, park: false, elev: 830 },
+            { id: 20, name: "South Bend, IN", lat: 41.6764, lng: -86.2520, dates: "Jun 1-2", nights: 1, type: "hotel", drive: "5h", notes: "Almost home!", park: false, elev: 720 },
+            { id: 21, name: "Canton, MI", lat: 42.3087, lng: -83.4821, dates: "Arrive Jun 2", nights: 0, type: "start", drive: "2.5h", notes: "Home sweet home! 🏠", park: false, elev: 850 }
+        ];
+
+        const COLORS = {
+            camp: { bg: '#10b981', text: '#000', glow: 'rgba(16, 185, 129, 0.6)' },
+            hotel: { bg: '#3b82f6', text: '#fff', glow: 'rgba(59, 130, 246, 0.6)' },
+            pass: { bg: '#6b7280', text: '#fff', glow: 'none' },
+            start: { bg: '#f97316', text: '#fff', glow: 'rgba(249, 115, 22, 0.6)' }
+        };
+
+        const TILES = {
+            dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+            satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            terrain: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
+        };
+
+        // ═══════════════════════════════════════════
+        // STATE
+        // ═══════════════════════════════════════════
+
+        let map, markers = [], tileLayer, carMarker;
+        let currentIndex = 0, isPlaying = false, speed = 1;
+
+        // ═══════════════════════════════════════════
+        // ELEMENTS
+        // ═══════════════════════════════════════════
+
+        const $ = id => document.getElementById(id);
+        const $$ = sel => document.querySelectorAll(sel);
+
+        // ═══════════════════════════════════════════
+        // INITIALIZE
+        // ═══════════════════════════════════════════
+
+        function init() {
+            createShootingStars();
+            initMap();
+            buildItinerary();
+            startCountdown();
+            bindEvents();
+
+            setTimeout(() => {
+                $('loader').classList.add('done');
+            }, 2000);
+        }
+
+        function createShootingStars() {
+            const container = $('shootingStars');
+            for (let i = 0; i < 5; i++) {
+                const star = document.createElement('div');
+                star.className = 'shooting-star';
+                star.style.top = (Math.random() * 50) + '%';
+                star.style.left = (Math.random() * 30) + '%';
+                star.style.animationDelay = (i * 4 + Math.random() * 2) + 's';
+                star.style.animationDuration = (2 + Math.random()) + 's';
+                container.appendChild(star);
+            }
+        }
+
+        function initMap() {
+            map = L.map('map', {
+                zoomControl: false
+            }).setView([45.5, -100], 5);
+
+            L.control.zoom({ position: 'bottomleft' }).addTo(map);
+
+            tileLayer = L.tileLayer(TILES.dark, {
+                attribution: '© CARTO',
+                maxZoom: 18
+            }).addTo(map);
+
+            // Add markers
+            STOPS.forEach((stop, i) => {
+                const marker = L.marker([stop.lat, stop.lng], {
+                    icon: createIcon(stop)
+                }).addTo(map);
+
+                marker.bindPopup(createPopup(stop), { className: '' });
+                marker.on('click', () => selectStop(i));
+                markers.push(marker);
+            });
+
+            // Fit bounds
+            const bounds = L.latLngBounds(STOPS.map(s => [s.lat, s.lng]));
+            map.fitBounds(bounds, { padding: [50, 50] });
+
+            // Load route
+            loadRoute();
+        }
+
+        function createIcon(stop) {
+            const c = COLORS[stop.type];
+            const glow = c.glow !== 'none' ? `box-shadow: 0 0 20px ${c.glow};` : '';
+            const content = stop.park ? '🏞️' : stop.id;
+
+            return L.divIcon({
+                className: '',
+                html: `<div style="
+                    width: 40px;
+                    height: 40px;
+                    background: ${c.bg};
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: ${c.text};
+                    font-family: 'Orbitron', monospace;
+                    font-weight: 700;
+                    font-size: ${stop.park ? '18px' : '14px'};
+                    border: 2px solid rgba(255,255,255,0.3);
+                    ${glow}
+                ">${content}</div>`,
+                iconSize: [40, 40],
+                iconAnchor: [20, 20],
+                popupAnchor: [0, -24]
+            });
+        }
+
+        function createPopup(stop) {
+            const c = COLORS[stop.type];
+            const types = { camp: '⛺ Camping', hotel: '🏨 Hotel', pass: '📍 Pass Through', start: '🚗 Start/End' };
+
+            let html = `
+                <div class="popup">
+                    <div class="popup-header">
+                        <div class="popup-icon ${stop.type}">${stop.park ? '🏞️' : stop.id}</div>
+                        <div class="popup-title">${stop.name}</div>
+                    </div>
+                    <div class="popup-row">
+                        <span class="popup-label">📅 Dates</span>
+                        <span class="popup-value">${stop.dates}</span>
+                    </div>
+            `;
+
+            if (stop.nights > 0) {
+                html += `<div class="popup-row"><span class="popup-label">🌙 Nights</span><span class="popup-value">${stop.nights}</span></div>`;
+            }
+
+            html += `<div class="popup-row"><span class="popup-label">🏷️ Type</span><span class="popup-value">${types[stop.type]}</span></div>`;
+
+            if (stop.drive) {
+                html += `<div class="popup-row"><span class="popup-label">🚗 Drive</span><span class="popup-value">${stop.drive}</span></div>`;
+            }
+
+            html += `<div class="popup-row"><span class="popup-label">⛰️ Elevation</span><span class="popup-value">${stop.elev.toLocaleString()} ft</span></div>`;
+
+            if (stop.notes) {
+                html += `<div class="popup-notes">${stop.notes}</div>`;
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        async function loadRoute() {
+            try {
+                const coords = STOPS.map(s => `${s.lng},${s.lat}`).join(';');
+                const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+                const data = await res.json();
+
+                if (data.code === 'Ok' && data.routes?.[0]) {
+                    const route = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+
+                    // Glow
+                    L.polyline(route, {
+                        color: '#8b5cf6',
+                        weight: 12,
+                        opacity: 0.15
+                    }).addTo(map);
+
+                    // Main
+                    L.polyline(route, {
+                        color: '#8b5cf6',
+                        weight: 4,
+                        opacity: 0.9
+                    }).addTo(map);
+
+                    // Car
+                    carMarker = L.marker([STOPS[0].lat, STOPS[0].lng], {
+                        icon: L.divIcon({
+                            className: '',
+                            html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">🚗</div>',
+                            iconSize: [24, 24],
+                            iconAnchor: [12, 12]
+                        }),
+                        zIndexOffset: 1000
+                    }).addTo(map);
+
+                    // Stats
+                    const miles = Math.round(data.routes[0].distance / 1609.34);
+                    const hours = Math.round(data.routes[0].duration / 3600);
+                    animateNum($('miles'), 0, miles, 2000);
+                    animateNum($('driveHours'), 0, hours, 2000);
+                }
+            } catch (e) {
+                console.error('Route error:', e);
+            }
+        }
+
+        function buildItinerary() {
+            const container = $('itinerary');
+
+            STOPS.forEach((stop, i) => {
+                const div = document.createElement('div');
+                div.className = `stop ${stop.type}`;
+                div.dataset.index = i;
+
+                let meta = stop.dates;
+                if (stop.nights > 0) meta += ` • ${stop.nights} night${stop.nights > 1 ? 's' : ''}`;
+
+                const parkTag = stop.park ? '<span class="park-tag">NP</span>' : '';
+                const driveTag = stop.drive ? `<span class="stop-drive">${stop.drive}</span>` : '';
+                const notes = stop.notes ? `<div class="stop-notes">${stop.notes}</div>` : '';
+
+                div.innerHTML = `
+                    <div class="stop-header">
+                        <div class="stop-num">${stop.park ? '🏞️' : stop.id}</div>
+                        <div class="stop-info">
+                            <div class="stop-name">${stop.name} ${parkTag}</div>
+                            <div class="stop-meta">
+                                <span>${meta}</span>
+                                ${driveTag}
+                            </div>
+                        </div>
+                    </div>
+                    ${notes}
+                `;
+
+                div.addEventListener('click', () => {
+                    selectStop(i);
+                    map.flyTo([stop.lat, stop.lng], 10, { duration: 1.5 });
+                    markers[i].openPopup();
+                    if (window.innerWidth <= 900) $('sidebar').classList.add('hidden');
+                });
+
+                container.appendChild(div);
+            });
+        }
+
+        function selectStop(index) {
+            currentIndex = index;
+            const stop = STOPS[index];
+
+            // Itinerary highlight
+            $$('.stop').forEach((el, i) => el.classList.toggle('active', i === index));
+
+            // HUD
+            const display = $('currentDisplay');
+            $('currentIcon').textContent = stop.park ? '🏞️' : stop.id;
+            $('currentIcon').style.background = COLORS[stop.type].bg;
+            $('currentIcon').style.color = COLORS[stop.type].text;
+            $('currentName').textContent = stop.name;
+            $('currentMeta').textContent = stop.drive ? `${stop.drive} drive` : stop.dates;
+            $('currentElev').textContent = stop.elev.toLocaleString();
+            $('stopsLeft').textContent = STOPS.length - index;
+            display.classList.add('show');
+
+            // Progress
+            const pct = ((index + 1) / STOPS.length) * 100;
+            $('progressFill').style.width = pct + '%';
+            $('currentNum').textContent = index + 1;
+            $('elevMarker').style.left = pct + '%';
+
+            // Car
+            if (carMarker) {
+                carMarker.setLatLng([stop.lat, stop.lng]);
+            }
+
+            // Scroll
+            const el = document.querySelector(`.stop[data-index="${index}"]`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Confetti on finish
+            if (index === STOPS.length - 1 && isPlaying) {
+                setTimeout(confetti, 500);
+            }
+        }
+
+        function bindEvents() {
+            // Toggle
+            $('toggleBtn').addEventListener('click', () => {
+                $('sidebar').classList.toggle('hidden');
+            });
+
+            // Play
+            $('playBtn').addEventListener('click', togglePlay);
+
+            // Speed
+            $('speedBtn').addEventListener('click', () => {
+                speed = speed === 1 ? 2 : speed === 2 ? 0.5 : 1;
+                $('speedLabel').textContent = speed + '×';
+            });
+
+            // Map styles
+            $$('.style-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    $$('.style-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    map.removeLayer(tileLayer);
+                    tileLayer = L.tileLayer(TILES[btn.dataset.style], { maxZoom: 18 }).addTo(map);
+                });
+            });
+
+            // Fullscreen
+            $('fullscreenBtn').addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+
+            // Fit
+            $('fitBtn').addEventListener('click', () => {
+                const bounds = L.latLngBounds(STOPS.map(s => [s.lat, s.lng]));
+                map.fitBounds(bounds, { padding: [50, 50] });
+            });
+
+            // Keyboard
+            document.addEventListener('keydown', e => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    togglePlay();
+                }
+                if (e.code === 'ArrowRight') {
+                    selectStop(Math.min(currentIndex + 1, STOPS.length - 1));
+                    map.flyTo([STOPS[currentIndex].lat, STOPS[currentIndex].lng], 10, { duration: 0.8 });
+                    markers[currentIndex].openPopup();
+                }
+                if (e.code === 'ArrowLeft') {
+                    selectStop(Math.max(currentIndex - 1, 0));
+                    map.flyTo([STOPS[currentIndex].lat, STOPS[currentIndex].lng], 10, { duration: 0.8 });
+                    markers[currentIndex].openPopup();
+                }
+                if (e.code === 'KeyF') {
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen();
+                    } else {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+
+            // Mobile
+            if (window.innerWidth <= 900) {
+                $('sidebar').classList.add('hidden');
+            }
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = $('playBtn');
+            const icon = $('playIcon');
+            const label = $('playLabel');
+
+            if (isPlaying) {
+                btn.classList.add('playing');
+                icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+                label.textContent = 'Pause';
+                playTrip();
+            } else {
+                btn.classList.remove('playing');
+                icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+                label.textContent = 'Play Trip';
+            }
+        }
+
+        async function playTrip() {
+            for (let i = currentIndex; i < STOPS.length && isPlaying; i++) {
+                selectStop(i);
+                map.flyTo([STOPS[i].lat, STOPS[i].lng], 9, { duration: 1.2 / speed });
+                markers[i].openPopup();
+                await sleep(2500 / speed);
+            }
+            if (isPlaying) togglePlay();
+        }
+
+        function startCountdown() {
+            const target = new Date('2025-05-12T08:00:00');
+
+            function tick() {
+                const now = new Date();
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    $('days').textContent = '🎉';
+                    $('hours').textContent = 'GO';
+                    $('mins').textContent = '';
+                    $('secs').textContent = '!';
+                    return;
+                }
+
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+
+                $('days').textContent = String(d).padStart(3, '0');
+                $('hours').textContent = String(h).padStart(2, '0');
+                $('mins').textContent = String(m).padStart(2, '0');
+                $('secs').textContent = String(s).padStart(2, '0');
+            }
+
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        function confetti() {
+            const container = $('confetti');
+            const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f97316', '#fbbf24', '#ec4899'];
+
+            for (let i = 0; i < 150; i++) {
+                const piece = document.createElement('div');
+                piece.style.cssText = `
+                    position: absolute;
+                    width: ${6 + Math.random() * 8}px;
+                    height: ${6 + Math.random() * 8}px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    left: ${Math.random() * 100}%;
+                    top: -20px;
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                    opacity: 0;
+                `;
+
+                piece.animate([
+                    { top: '-20px', opacity: 1, transform: 'rotate(0deg) translateX(0)' },
+                    { top: '100vh', opacity: 0, transform: `rotate(${720 + Math.random() * 360}deg) translateX(${-80 + Math.random() * 160}px)` }
+                ], {
+                    duration: 2500 + Math.random() * 1500,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    delay: Math.random() * 400
+                });
+
+                container.appendChild(piece);
+                setTimeout(() => piece.remove(), 5000);
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // UTILS
+        // ═══════════════════════════════════════════
+
+        function sleep(ms) {
+            return new Promise(r => setTimeout(r, ms));
+        }
+
+        function animateNum(el, from, to, dur) {
+            const start = performance.now();
+            const range = to - from;
+
+            function frame(time) {
+                const p = Math.min((time - start) / dur, 1);
+                const ease = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.round(from + range * ease).toLocaleString();
+                if (p < 1) requestAnimationFrame(frame);
+            }
+
+            requestAnimationFrame(frame);
+        }
+
+        // ═══════════════════════════════════════════
+        // START
+        // ═══════════════════════════════════════════
+
+        document.addEventListener('DOMContentLoaded', init);
+    })();
+    </script>
+</body>
+</html>
